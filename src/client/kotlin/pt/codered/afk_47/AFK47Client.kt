@@ -3,42 +3,39 @@ package pt.codered.afk_47
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.text.Text
+import pt.codered.afk_47.afk_modules.EntityInspector
 
 object AFK47Client : ClientModInitializer {
     override fun onInitializeClient() {
         // This entrypoint is suitable for setting up client-specific logic, such as rendering.
-        ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
+        registerCommands()
 
-            // The base command is "/afk"
+        ClientTickEvents.END_CLIENT_TICK.register { client ->
+            if (client.player == null || client.world == null) return@register
+
+            AFKManager.onTick(client)
+        }
+    }
+
+    private fun registerCommands() {
+        ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(
                 literal("afk")
-
-                    // Subcommand: /afk chop
-                    .then(literal("chop").executes { context ->
-                        val client = context.source.client
-                        client.player?.sendMessage(Text.of("Chop"), false)
-                        1 // Return 1 indicates success
-                    })
-
-                    // Subcommand: /afk mine
-                    .then(literal("mine").executes { context ->
-                        val client = context.source.client
+                    .then(literal("inspect").executes {
+                        EntityInspector.enable(it.source.client)
                         1
                     })
+                    .then(literal("stop").executes {
+                        val client = it.source.client
 
-                    // Subcommand: /afk fish
-                    .then(literal("fish").executes { context ->
-                        1
-                    })
+                        Baritone.stop()
 
-                    // Subcommand: /afk kill
-                    .then(literal("kill").executes { context ->
-                        1
-                    })
+                        AFKManager.disableAll(client)
 
-                    // Subcommand: /afk stop
-                    .then(literal("stop").executes { context ->
+                        client.player?.sendMessage(Text.of("§c[AFK-47] STOPPED ALL"), false)
+
                         1
                     })
             )

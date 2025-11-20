@@ -22,6 +22,8 @@ repositories {
         name = "Babbaj Maven"
         url = "https://babbaj.github.io/maven/"
     }
+
+    maven { url 'https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1' }
 }
 
 loom {
@@ -31,6 +33,18 @@ loom {
         "afk-47" {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
+        }
+    }
+
+    runs {
+        client {
+            client()
+            setConfigName("Minecraft Client")
+            ideConfigGenerated(true)
+            runDir("run")
+
+            // This forces DevAuth to turn on, even if the local config says false
+            vmArgs "-Ddevauth.enabled=true", "-Ddevauth.account=main"
         }
     }
 
@@ -49,6 +63,8 @@ dependencies {
     modImplementation "dev.babbaj:nether-pathfinder:1.5"
 
     modImplementation("dev.babbaj:nether-pathfinder:1.5")
+
+    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:1.2.1"
 }
 
 processResources {
