@@ -1,0 +1,48 @@
+{
+	"schemaVersion": 1,
+	"id": "afk-47",
+	"version": "${version}",
+	"name": "AFK-47",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/afk-47/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "pt.codered.afk_47.AFK47",
+				"adapter": "kotlin"
+			}
+		],
+		"client": [
+			{
+				"value": "pt.codered.afk_47.AFK47Client",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"afk-47.mixins.json",
+		{
+			"config": "afk-47.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.1",
+		"minecraft": "~1.21.8",
+		"java": ">=21",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
