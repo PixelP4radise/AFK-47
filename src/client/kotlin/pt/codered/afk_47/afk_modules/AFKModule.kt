@@ -21,4 +21,5 @@ abstract class AFKModule {
     open fun onDisable(client: MinecraftClient) {}
     open fun onTick(client: MinecraftClient) {}
     open fun onChat(client: MinecraftClient, message: Text) {}
+    open fun onSystemMessage(client: MinecraftClient, message: Text) {}
 }

@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.minecraft.text.Text
+import pt.codered.afk_47.afk_modules.AFKFishing
 import pt.codered.afk_47.afk_modules.EntityInspector
 
 object AFK47Client : ClientModInitializer {
@@ -23,8 +24,16 @@ object AFK47Client : ClientModInitializer {
             val client = net.minecraft.client.MinecraftClient.getInstance()
 
             // Send to our manager
+            AFKManager.onSystemMessage(client, message)
+
+            true // Return true to let the message appear in chat. False hides it.
+        }
+
+        ClientReceiveMessageEvents.ALLOW_CHAT.register { message, signedMessage, sender, params, receptionTimestamp ->
+            val client = net.minecraft.client.MinecraftClient.getInstance()
+
+            // Send to our manager
             AFKManager.onChat(client, message)
-            println("Got a message saying: ${message.string}")
 
             true // Return true to let the message appear in chat. False hides it.
         }
@@ -38,6 +47,10 @@ object AFK47Client : ClientModInitializer {
                         EntityInspector.enable(it.source.client)
                         1
                     })
+                    .then(literal("fish")).executes {
+                        AFKFishing.enable(it.source.client)
+                        1
+                    }
                     .then(literal("stop").executes {
                         val client = it.source.client
 
