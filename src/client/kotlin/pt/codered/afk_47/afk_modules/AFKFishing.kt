@@ -3,6 +3,7 @@ package pt.codered.afk_47.afk_modules
 import net.minecraft.client.MinecraftClient
 import net.minecraft.text.Text
 import net.minecraft.util.math.Vec3d
+import pt.codered.afk_47.utils.ChatUtils
 
 object AFKFishing : AFKModule() {
     private var anchorPos: Vec3d? = null
@@ -22,11 +23,8 @@ object AFKFishing : AFKModule() {
 
     }
 
-    override fun onChat(client: MinecraftClient, message: Text) {
-        println("Got unfiltered message: $message")
-    }
-
     override fun onSystemMessage(client: MinecraftClient, message: Text) {
-        println("Got unfiltered system message: $message")
+        if (ChatUtils.isDefenseMessage(message) || ChatUtils.isManaMessage(message)) return
+        println("Got unfiltered system message: ${message.string}")
     }
 }

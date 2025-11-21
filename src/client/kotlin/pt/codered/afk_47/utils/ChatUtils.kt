@@ -7,4 +7,9 @@ object ChatUtils {
         val content = message.string.lowercase()
         return content.contains("defense")
     }
+
+    fun isManaMessage(message: Text): Boolean {
+        val content = message.string.lowercase()
+        return content.contains("mana")
+    }
 }
