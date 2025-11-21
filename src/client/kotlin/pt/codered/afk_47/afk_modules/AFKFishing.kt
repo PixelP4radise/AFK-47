@@ -23,7 +23,7 @@ object AFKFishing : AFKModule() {
     }
 
     override fun onChat(client: MinecraftClient, message: Text) {
-        println("Got message: $message")
+        println("Got unfiltered message: $message")
     }
 
     override fun onSystemMessage(client: MinecraftClient, message: Text) {

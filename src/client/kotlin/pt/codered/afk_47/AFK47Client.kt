@@ -22,7 +22,6 @@ object AFK47Client : ClientModInitializer {
 
         ClientReceiveMessageEvents.ALLOW_GAME.register { message, overlay ->
             val client = net.minecraft.client.MinecraftClient.getInstance()
-
             // Send to our manager
             AFKManager.onSystemMessage(client, message)
 
@@ -31,7 +30,6 @@ object AFK47Client : ClientModInitializer {
 
         ClientReceiveMessageEvents.ALLOW_CHAT.register { message, signedMessage, sender, params, receptionTimestamp ->
             val client = net.minecraft.client.MinecraftClient.getInstance()
-
             // Send to our manager
             AFKManager.onChat(client, message)
 
@@ -47,10 +45,11 @@ object AFK47Client : ClientModInitializer {
                         EntityInspector.enable(it.source.client)
                         1
                     })
-                    .then(literal("fish")).executes {
+                    .then(literal("fish").executes {
+                        println("Enabled fish")
                         AFKFishing.enable(it.source.client)
                         1
-                    }
+                    })
                     .then(literal("stop").executes {
                         val client = it.source.client
 
