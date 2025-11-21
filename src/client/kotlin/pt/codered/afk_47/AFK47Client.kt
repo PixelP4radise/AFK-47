@@ -19,11 +19,12 @@ object AFK47Client : ClientModInitializer {
             AFKManager.onTick(client)
         }
 
-        ClientReceiveMessageEvents.ALLOW_CHAT.register { message, signedMessage, sender, params, time ->
+        ClientReceiveMessageEvents.ALLOW_GAME.register { message, overlay ->
             val client = net.minecraft.client.MinecraftClient.getInstance()
 
             // Send to our manager
             AFKManager.onChat(client, message)
+            println("Got a message saying: ${message.string}")
 
             true // Return true to let the message appear in chat. False hides it.
         }
