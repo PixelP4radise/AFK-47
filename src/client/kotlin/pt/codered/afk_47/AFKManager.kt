@@ -1,6 +1,7 @@
 package pt.codered.afk_47
 
 import net.minecraft.client.MinecraftClient
+import net.minecraft.text.Text
 import pt.codered.afk_47.afk_modules.AFKModule
 import pt.codered.afk_47.afk_modules.EntityInspector
 
@@ -16,5 +17,10 @@ object AFKManager {
 
     fun disableAll(client: MinecraftClient) {
         modules.forEach { it.disable(client) }
+    }
+
+    fun onChat(client: MinecraftClient, message: Text) {
+        // Pass the message to enabled modules
+        modules.filter { it.isEnabled }.forEach { it.onChat(client, message) }
     }
 }

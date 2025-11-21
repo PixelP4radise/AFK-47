@@ -4,6 +4,7 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.minecraft.text.Text
 import pt.codered.afk_47.afk_modules.EntityInspector
 
@@ -16,6 +17,15 @@ object AFK47Client : ClientModInitializer {
             if (client.player == null || client.world == null) return@register
 
             AFKManager.onTick(client)
+        }
+
+        ClientReceiveMessageEvents.ALLOW_CHAT.register { message, signedMessage, sender, params, time ->
+            val client = net.minecraft.client.MinecraftClient.getInstance()
+
+            // Send to our manager
+            AFKManager.onChat(client, message)
+
+            true // Return true to let the message appear in chat. False hides it.
         }
     }
 
