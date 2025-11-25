@@ -1,8 +1,12 @@
 package pt.codered.afk_47.afk_modules
 
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.network.ClientPlayerEntity
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityType
 import net.minecraft.item.Items
 import net.minecraft.text.Text
+import net.minecraft.util.math.Box
 import pt.codered.afk_47.utils.ChatUtils
 
 object AFKFishing : AFKModule() {
@@ -14,10 +18,20 @@ object AFKFishing : AFKModule() {
     }
 
     override fun onTick(client: MinecraftClient) {
-        if (!isHoldingRod(client)) return
-        //check if player is holding a cane
-        //check if bobber is already on water
-        //if not send cane after delay from reel in
+        val player = client.player ?: return
+        val world = client.world ?: return
+
+        if (!isHoldingRod(player)) return
+
+        val range = 25.0
+        val box = Box.of(player.pos, range * 2, range * 2, range * 2)
+
+        val nearbyEntities = world.getOtherEntities(player, box)
+
+        if (!isBobberOut(nearbyEntities)) {
+            //send cane after the delay from the reel in
+        }
+
         //if yes wait for entity with name ? save then check when entity name becomes !!!
     }
 
@@ -31,8 +45,18 @@ object AFKFishing : AFKModule() {
         println("Got chat message: ${message.string}")
     }
 
-    private fun isHoldingRod(client: MinecraftClient): Boolean {
-        val player = client.player ?: return false
-        return player.mainHandStack.item != Items.FISHING_ROD
+    private fun isHoldingRod(player: ClientPlayerEntity): Boolean {
+        return player.mainHandStack.item == Items.FISHING_ROD
+    }
+
+    private fun isBobberOut(entities: List<Entity>): Boolean {
+        entities.forEach { entity ->
+            val type = entity.type
+
+            if (type == EntityType.FISHING_BOBBER) {
+                return true
+            }
+        }
+        return false
     }
 }
