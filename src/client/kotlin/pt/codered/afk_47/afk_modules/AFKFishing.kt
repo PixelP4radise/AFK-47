@@ -11,12 +11,12 @@ import net.minecraft.util.math.Box
 import pt.codered.afk_47.utils.ChatUtils
 import pt.codered.afk_47.utils.TimeUtils
 
+enum class FishingState { CASTING, WAITING_FOR_BITE, REELING, IDLE_AFTER_CATCH }
+
 object AFKFishing : AFKModule() {
+    var state = FishingState.CASTING
     var stateTimer = 0
 
-    // --- STATE VARIABLES ---
-    private var castDelay = 0           // Cooldown between casts
-    private var reactionTimer = 0       // Human reaction delay
 
     override fun onEnable(client: MinecraftClient) {
         //reset variables
@@ -31,8 +31,6 @@ object AFKFishing : AFKModule() {
         val world = client.world ?: return
         val interactionManager = client.interactionManager ?: return
 
-
-
         if (!isHoldingRod(player)) return
 
         val range = 25.0
@@ -40,24 +38,41 @@ object AFKFishing : AFKModule() {
 
         val nearbyEntities = world.getOtherEntities(player, box)
 
-        if (!isBobberOut(nearbyEntities)) {
-            if (castDelay > 0) castDelay--
-            else if (castDelay == 0) {
-                interactionManager.interactItem(player, Hand.MAIN_HAND)
-                player.swingHand(Hand.MAIN_HAND)
-                castDelay = TimeUtils.getRandomDelay(30, 50)
-            }
+        if (stateTimer > 0) {
+            stateTimer--
+            return
         }
 
-        if (!isReadyToFish(nearbyEntities)) return
-        else {
-            if (reactionTimer > 0) reactionTimer--
-
-            if (reactionTimer == 0) {
+        when (state) {
+            FishingState.CASTING -> {
                 interactionManager.interactItem(player, Hand.MAIN_HAND)
                 player.swingHand(Hand.MAIN_HAND)
 
-                reactionTimer = TimeUtils.getHumanReaction(7.0, 2.0)
+                state = FishingState.WAITING_FOR_BITE
+                stateTimer = TimeUtils.getRandomDelay(20, 35)
+            }
+
+            FishingState.WAITING_FOR_BITE -> {
+                if (!isBobberOut(nearbyEntities)) {
+                    state = FishingState.CASTING
+                    return
+                }
+
+                if (isReadyToFish(nearbyEntities)) {
+                    stateTimer = TimeUtils.getHumanReaction(6.0, 1.5)
+                    state = FishingState.REELING
+                }
+            }
+
+            FishingState.REELING -> {
+                interactionManager.interactItem(player, Hand.MAIN_HAND)
+                player.swingHand(Hand.MAIN_HAND)
+                state = FishingState.IDLE_AFTER_CATCH
+                stateTimer = TimeUtils.getRandomDelay(20, 35)
+            }
+
+            FishingState.IDLE_AFTER_CATCH -> {
+                state = FishingState.CASTING
             }
         }
     }

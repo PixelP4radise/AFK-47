@@ -46,6 +46,17 @@ loom {
             // This forces DevAuth to turn on, even if the local config says false
             vmArgs "-Ddevauth.enabled=true", "-Ddevauth.account=main"
         }
+
+        clientSafe {
+            client()
+            setConfigName("Minecraft Client (Safe)") // This is the name you will see in your IDE
+            ideConfigGenerated(true)
+            runDir("run")
+            // You can keep the same run directory or change it to "runSafe" if you want separate mods/configs
+
+            // Points to the new DevAuth profile
+            vmArgs "-Ddevauth.enabled=true", "-Ddevauth.account=alt"
+        }
     }
 
 }
